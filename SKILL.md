@@ -1,6 +1,6 @@
 ---
 name: wordshape
-description: 文字塑形排印。两个功能：①文字复制与变形（9 种：旋转重复/圆形文字环绕/透视空间/垂直波浪/水平波浪/流线波纹/波浪织锦/鱼眼透视/环形旋转）；②主体剪影文字填充（7 种：基础横写/基础竖写/波浪/鱼眼凸起/环形旋转/透视空间·轮廓圈/透视空间·圆环）。纯本地 Python 计算（Pillow+numpy），不消耗 AI 生图额度、无水印、结果确定性可复现。当用户要求把文字做成波浪/鱼眼/环形/涡旋/透视隧道等图形效果，或把文字填进人物、动物、物品轮廓做成透明 PNG 素材时使用。
+description: "WordShape — text-as-graphics toolkit. Feature 1 (text transform) renders a string as 9 graphical effects: spiral repeat, circular text, perspective tunnel, vertical wave, horizontal wave, flowline, wave weave, fisheye, ring rotation. Feature 2 (silhouette fill) pours a string into a subject outline (person/animal/object) producing a transparent PNG: horizontal, vertical, wave, fisheye, swirl, tunnel-outline, tunnel-round. Pure local Python (Pillow + numpy): no AI image model, no watermark, deterministic output. Use when the user wants text turned into a wave/fisheye/ring/vortex/perspective graphic, or wants text filling a silhouette as a transparent asset. 中文：文字塑形排印，文字复制与变形（9 种）+ 主体剪影文字填充（7 种），纯本地计算、无水印、结果可复现。"
 ---
 
 # WordShape · 文字塑形排印

@@ -1,242 +1,238 @@
-# WordShape · 文字塑形排印
+# WordShape
 
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+**English** | [简体中文](README.zh-CN.md)
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 ![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)
 
-**把文字变成图形，再把文字填进图形。**
+**Turn text into graphics — then pour text into shapes.**
 
-纯 Python 实现的文字图形工具，两个功能、16 种效果。不调用任何 AI 生图模型 —— 全部本地计算，**无水印、不消耗生图额度、同输入必出同图**。
+A pure-Python typography tool with two features and 16 effects. No AI image model involved: everything is computed locally, so output is **watermark-free, credit-free and fully deterministic** (same input → same pixels).
 
----
-
-## 目录
-
-- [功能一览](#功能一览)
-- [安装](#安装)
-- [快速开始](#快速开始)
-- [功能一：文字复制与变形](#功能一文字复制与变形)
-- [功能二：主体剪影文字填充](#功能二主体剪影文字填充)
-- [字体（跨平台）](#字体跨平台)
-- [接入其他软件 / Agent](#接入其他软件--agent)
-- [作为 Agent Skill 使用](#作为-agent-skill-使用)
-- [许可](#许可)
+![Spiral repeat effect](examples/text-spiral.png)
 
 ---
 
-## 功能一览
+## Contents
 
-| 功能                  | 输入           | 输出                         |
-| ------------------- | ------------ | -------------------------- |
-| **text** · 文字复制与变形  | 一段文字         | 文字复制、弯折、透视、环形排布后的图形（9 种效果） |
-| **fill** · 主体剪影文字填充 | 一张主体图 + 一段文字 | 文字填满主体轮廓的透明 PNG（7 种效果）     |
-
-输出均为 PNG，默认红字 `#E03A2F`、透明底，可直接叠加到海报 / 封面 / 视频上。
+- [Features](#features)
+- [Install](#install)
+- [Quick start](#quick-start)
+- [Feature 1 — Text transform](#feature-1--text-transform)
+- [Feature 2 — Subject silhouette fill](#feature-2--subject-silhouette-fill)
+- [Fonts](#fonts)
+- [Integration](#integration)
+- [Project layout](#project-layout)
+- [FAQ](#faq)
+- [License](#license)
 
 ---
 
-## 安装
+## Features
+
+| Feature | Input | Output |
+|---|---|---|
+| **text** — text transform | A string | Text replicated, warped, perspective-bent or arranged in rings (9 effects) |
+| **fill** — silhouette fill | A subject image + a string | Transparent PNG where the text fills the subject outline (7 effects) |
+
+All output is PNG, red text `#E03A2F` on a transparent background by default — ready to composite onto posters, covers or video.
+
+---
+
+## Install
 
 ```bash
-git clone <your-repo-url> wordshape
-cd wordshape
+git clone https://github.com/DajiaoFish/Wordshape.git
+cd Wordshape
 pip install -r requirements.txt
 ```
 
-依赖只有两个：`Pillow`、`numpy`。Python 3.9+。
+Requirements: Python 3.9+, `Pillow`, `numpy`. Nothing else.
 
 ---
 
-## 快速开始
+## Quick start
 
 ```bash
-# 列出全部效果
+# List all effects
 python -m wordshape list
 
-# 功能一：文字复制与变形（默认透明底红字）
-python -m wordshape text "我爱你" -o out/spiral.png --effect spiral
+# Feature 1: text transform (default: transparent bg, red text)
+python -m wordshape text "HELLO" -o out/spiral.png --effect spiral
 
-# 功能一：换配色（黑底红字）
+# Feature 1: black background, red text
 python -m wordshape text "KEEP GOING" -o out/fisheye.png --effect fisheye --mode br
 
-# 功能二：文字填进主体剪影（横排）
-python -m wordshape fill cat.png "今天也要加油鸭" -o out/cat.png
+# Feature 2: fill a silhouette (horizontal)
+python -m wordshape fill subject.png "stay curious" -o out/subject.png
 
-# 功能二：竖排 + 波浪变形
-python -m wordshape fill cat.png "今天也要加油鸭" -o out/cat_wave.png --layout v --effect wave
+# Feature 2: vertical layout + wave distortion
+python -m wordshape fill subject.png "stay curious" -o out/subject_wave.png --layout v --effect wave
 ```
 
 ---
 
-## 功能一：文字复制与变形
+## Feature 1 — Text transform
 
-| 效果名         | 中文名    | 说明                                 |
-| ----------- | ------ | ---------------------------------- |
-| `spiral`    | 旋转重复   | 文字围绕中心缩放 + 旋转复制 25 份，形成涡旋，最前一层原字清晰 |
-| `circular`  | 圆形文字环绕 | 文字沿圆周弯排成环，再旋转复制 8 层                |
-| `tunnel`    | 透视空间   | 多行文字做成四面透视墙，向中心收缩，中间留空             |
-| `wave_v`    | 垂直波浪   | 多行文字沿纵向连续起伏                        |
-| `wave_h`    | 水平波浪   | 多行文字沿横向错位弯曲                        |
-| `flowline`  | 流线波纹   | 多行文字沿同一条平滑曲线流动                     |
-| `waveweave` | 波浪织锦   | 二十多条薄波浪带交织成纹理（可读性低，适合底纹）           |
-| `fisheye`   | 鱼眼透视   | 凸透镜映射，中间放大外鼓、边缘压缩                  |
-| `ring`      | 环形旋转   | 文字排成方框，嵌套旋转复制 20 层                 |
+| Key | Name | Description |
+|---|---|---|
+| `spiral` | Spiral repeat | 25 copies, 97% scale + 10° rotation each — dense vortex, original text readable on top |
+| `circular` | Circular text | Text bent along a circle, then 8 rotated copies |
+| `tunnel` | Perspective tunnel | Multi-line text as four perspective walls, hollow centre |
+| `wave_v` | Vertical wave | Multi-line text bent along a vertical sine wave |
+| `wave_h` | Horizontal wave | Multi-line text with staggered horizontal offsets |
+| `flowline` | Flowline | All lines flow along one smooth sine curve |
+| `waveweave` | Wave weave | 23 thin wave bands interwoven — texture use, low legibility |
+| `fisheye` | Fisheye | Convex lens mapping: magnified centre, compressed edges |
+| `ring` | Ring rotation | Text frames nested with 95% scale + 3° rotation, 20 layers |
 
-### 输出模式
+### Output modes
 
-| `--mode` | 背景           | 文字                  |
-| -------- | ------------ | ------------------- |
-| `tr`     | 透明           | 红 `#E03A2F`（**默认**） |
-| `br`     | 黑 `#111111`  | 红                   |
-| `bw`     | 白            | 黑                   |
-| `wb`     | 黑            | 白                   |
-| `white`  | 透明           | 白                   |
-| `black`  | 透明           | 黑                   |
-| `red`    | 红            | 白                   |
-| `navy`   | 藏青 `#0A1F33` | 青 `#4FE0E6`         |
+| `--mode` | Background | Text |
+|---|---|---|
+| `tr` | transparent | red `#E03A2F` (**default**) |
+| `br` | black `#111111` | red |
+| `bw` | white | black |
+| `wb` | black | white |
+| `white` | transparent | white |
+| `black` | transparent | black |
+| `red` | red | white |
+| `navy` | navy `#0A1F33` | cyan `#4FE0E6` |
 
-自定义：`--bg "#101010" --fg "#F0C040"`（`--mode` 会覆盖这两个参数）。
+Custom colours: `--bg "#101010" --fg "#F0C040"`.
 
-### 常用参数
+### Options
 
-| 参数           | 说明                | 默认    |
-| ------------ | ----------------- | ----- |
-| `--size`     | 基准字号              | 240   |
-| `--rows`     | 覆盖效果行数（如透视空间每边行数） | 按效果自动 |
-| `--font`     | 字体文件路径            | 自动探测  |
-| `-o / --out` | 输出文件              | 必填    |
-
----
-
-## 功能二：主体剪影文字填充
-
-| 效果     | 用法                      | 说明              |
-| ------ | ----------------------- | --------------- |
-| 基础横写   | （不加参数）                  | 逐行写，写完一行接下一行    |
-| 基础竖写   | `--layout v`            | 逐列写，写完一列接下一列    |
-| 波浪     | `--effect wave`         | 字沿纵向正弦起伏        |
-| 鱼眼凸起   | `--effect fisheye`      | 中间放大、四周缩小       |
-| 环形旋转   | `--effect swirl`        | 越靠外扭转越大         |
-| 透视·轮廓圈 | `--effect tunnel`       | 沿主体轮廓一圈圈向内写     |
-| 透视·圆环  | `--effect tunnel_round` | 正圆圈排字，中心扣主体轮廓空洞 |
-
-### 输入图要求
-
-1. **最好：透明底 PNG** —— 直接使用 alpha 通道
-2. **次选：纯色背景** —— 自动分割主体（`--threshold` 可调）
-3. **复杂背景** —— 先抠图，或用 `--mask` 指定蒙版
-
-### 常用参数
-
-| 参数            | 说明               | 默认        |
-| ------------- | ---------------- | --------- |
-| `--size`      | 字号基准（控制密度）       | 16        |
-| `--rows`      | 行数（竖排 = 列数），越大越密 | 自动        |
-| `--gap`       | 行缝比例             | 0.02      |
-| `--fg`        | 文字颜色             | `#E03A2F` |
-| `--threshold` | 纯色背景分割阈值         | 36        |
+| Flag | Description | Default |
+|---|---|---|
+| `--size` | Base font size | 240 |
+| `--rows` | Override row count for effects that take it | effect-specific |
+| `--font` | Font file path | auto-detected |
+| `-o / --out` | Output PNG | required |
 
 ---
 
-## 字体（跨平台）
+## Feature 2 — Subject silhouette fill
 
-脚本会按顺序自动查找字体，无需配置：
+| Effect | Flag | Description |
+|---|---|---|
+| Horizontal (default) | — | Fill line by line |
+| Vertical | `--layout v` | Fill column by column |
+| Wave | `--effect wave` | Vertical sine distortion |
+| Fisheye bulge | `--effect fisheye` | Magnified centre, shrunken edges |
+| Swirl | `--effect swirl` | Stronger twist towards the outside |
+| Tunnel (outline) | `--effect tunnel` | Rings follow the subject outline, hollow centre |
+| Tunnel (round) | `--effect tunnel_round` | Perfect circular rings, centre cut to the subject shape |
 
-1. 环境变量 `WORDSHAPE_FONT` 指定的字体（最优先）
-2. 仓库内 `fonts/` 目录（自行放进字体文件即可随仓库分发）
-3. 系统字体目录：Windows `C:/Windows/Fonts`、macOS `/System/Library/Fonts`、Linux `/usr/share/fonts` 等
+### Input images
 
-内置候选包括：微软雅黑 / 黑体 / PingFang / Hiragino / 思源黑体 / Noto Sans CJK / 文泉驿 等。
+1. **Transparent PNG** — best, uses the alpha channel directly
+2. **Solid background** — subject is segmented automatically (`--threshold`)
+3. **Complex background** — cut it out first, or pass `--mask`
 
-找不到字体时可用 `--font` 直接指定：
+### Options
+
+| Flag | Description | Default |
+|---|---|---|
+| `--size` | Base font size (density) | 16 |
+| `--rows` | Row count (columns in vertical mode) | auto |
+| `--gap` | Line gap ratio | 0.02 |
+| `--fg` | Text colour | `#E03A2F` |
+| `--threshold` | Background segmentation threshold | 36 |
+
+---
+
+## Fonts
+
+Fonts are resolved automatically, in this order:
+
+1. `WORDSHAPE_FONT` environment variable
+2. `fonts/` directory inside the repo (bundle a font there to ship it)
+3. System font directories — Windows `C:/Windows/Fonts`, macOS `/System/Library/Fonts`, Linux `/usr/share/fonts`
+
+Built-in candidates include Microsoft YaHei, SimHei, PingFang, Hiragino, Noto Sans CJK, Source Han Sans and WenQuanYi.
+
+Pass `--font /path/to/font.otf` to override.
+
+---
+
+## Integration
+
+### CLI
+
+Any environment that can run a shell command can call WordShape directly:
 
 ```bash
-python -m wordshape text "你好" -o out.png --font /path/to/NotoSansSC-Bold.otf
+python -m wordshape text "<text>" -o <out.png> --effect <key>
+python -m wordshape fill <image.png> "<text>" -o <out.png> [--layout v] [--effect wave]
 ```
 
----
+Exit code `0` means success; the output path is printed to stdout.
 
-## 接入其他软件 / Agent
+### HTTP server
 
-### 1. 命令行调用（n8n、脚本、CI、任何能跑 shell 的 Agent）
-
-```bash
-python -m wordshape text "<文字>" -o <输出.png> --effect <效果名>
-python -m wordshape fill <图.png> "<文字>" -o <输出.png> [--layout v] [--effect wave]
-```
-
-退出码 0 表示成功，输出路径会打印到 stdout（`EFFECT -> ...` / `TEXT -> ...`）。
-
-### 2. HTTP 服务（豆包 / 扣子 Coze / Dify / 任意低代码平台）
-
-仓库自带零依赖服务端 `server.py`（仅用标准库，不需要 Flask）：
+`server.py` is a zero-dependency server (standard library only):
 
 ```bash
 python server.py --port 8000
 ```
 
-接口（JSON，图片用 base64 传输）：
-
 ```bash
-# 功能一
 curl -X POST http://127.0.0.1:8000/text \
   -H "Content-Type: application/json" \
-  -d '{"text":"我爱你","effect":"spiral","mode":"tr"}'
+  -d '{"text":"HELLO","effect":"spiral","mode":"tr"}'
 
-# 功能二（image 传 base64 或 data URI）
 curl -X POST http://127.0.0.1:8000/fill \
   -H "Content-Type: application/json" \
-  -d '{"image":"<base64>","text":"我爱你","layout":"v","effect":"wave"}'
+  -d '{"image":"<base64 or data URI>","text":"stay curious","layout":"v"}'
 ```
 
-返回 `{"ok": true, "image": "<base64 PNG>"}`，直接作为图片返回给调用方。
+Both return `{"ok": true, "image": "<base64 PNG>"}`.
 
-> **关于豆包**：豆包 App 本身不能执行 Python 代码。可行路径是「扣子 Coze 工作流」——把本服务部署到一台可访问的机器（或云函数），在 Coze 里用 **HTTP 请求节点** 调 `/text` 或 `/fill`，再把返回的 base64 转成图片输出。Coze 的「代码节点」只能跑短时 Python，跑本项目的图像计算容易超时，推荐 HTTP 方式。
+> Note: sandboxed workflow engines that only allow `numpy` / `requests` (for example Coze code nodes) cannot run this locally — deploy `server.py` and call it over HTTP instead.
 
-### 3. 作为 Agent Skill 使用（Claude Code 等支持 skills 的环境）
+### Agent skills
 
-仓库根目录带 `SKILL.md`（Agent Skills 标准格式），把整个目录放进目标 Agent 的 skills 目录即可，Agent 会根据 description 自动选中并调用 CLI。
+`SKILL.md` follows the Agent Skills format (YAML front matter + instructions). Drop the repository into an agent's skills directory — the agent picks it up from the description and calls the CLI.
 
 ---
 
-## 项目结构
+## Project layout
 
 ```
-wordshape-pack/
+wordshape/
 ├── wordshape/
-│   ├── textfx.py        # 功能一：9 种变形效果
-│   ├── subjectfill.py   # 功能二：剪影文字填充
-│   ├── cli.py           # 命令行入口
+│   ├── textfx.py        # Feature 1: 9 transform effects
+│   ├── subjectfill.py   # Feature 2: silhouette fill
+│   ├── cli.py           # command-line entry
 │   └── __main__.py      # python -m wordshape
-├── server.py            # 零依赖 HTTP 服务（豆包/Coze/Dify 接入用）
-├── SKILL.md             # Agent Skills 描述文件
+├── server.py            # zero-dependency HTTP server
+├── SKILL.md             # Agent Skills descriptor
 ├── requirements.txt
 └── examples/
 ```
 
 ---
 
-## 常见问题
+## FAQ
 
-**Q：输出是透明底，怎么看不见背景？**  
-这是设计如此。输出是素材图，叠到自己的画面上用；需要底色请加 `--mode bw` 等。
+**Why is the output on a transparent background?**
+It is a design asset meant to be composited onto your own artwork. Use `--mode bw` (or similar) for a solid background.
 
-**Q：为什么剪影看起来像"文字块"？**  
-剪影填充的本质就是文字铺满形状，远看识形、近看全是字。主体细节越丰富（毛发、耳朵、手指），形状越容易辨认。
+**Why does the silhouette look like a "block of text"?**
+That is the nature of silhouette filling: shape at a distance, text up close. Subjects with rich detail (fur, ears, fingers) read better than flat blocks.
 
-**Q：支持英文 / 日文 / 韩文吗？**  
-支持任意语言。英文自动保留单词间距，中日韩文无缝连写。
+**Does it support Chinese / Japanese / Korean?**
+Yes, any language. Latin text keeps word spacing; CJK is written seamlessly without gaps.
 
-**Q：同一个效果跑两次结果一样吗？**  
-完全一样。纯确定性计算，可反复重跑调参。
+**Will two runs produce the same image?**
+Yes. Deterministic computation — identical inputs produce identical output, so you can re-run freely while tuning.
 
-**Q：会消耗 AI 生图额度吗？**  
-不会。全部是本地图像处理，秒级出图。
+**Does it consume image-generation credits?**
+No. Everything is local image processing.
 
 ---
 
-## 许可
+## License
 
 [MIT](LICENSE) © 2026 [DajiaoFish](https://github.com/DajiaoFish)
-
-可自由使用、修改、分发与商用，保留版权声明即可。
