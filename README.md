@@ -9,7 +9,9 @@
 
 A pure-Python typography tool with two features and 16 effects. No AI image model involved: everything is computed locally, so output is **watermark-free, credit-free and fully deterministic** (same input → same pixels).
 
-![Spiral repeat effect](examples/text-spiral.png)
+![Nine text transform effects](examples/overview-9-effects.png)
+
+*Feature 1 — nine text transform effects*
 
 ---
 
@@ -113,6 +115,10 @@ Custom colours: `--bg "#101010" --fg "#F0C040"`.
 ---
 
 ## Feature 2 — Subject silhouette fill
+
+![Seven silhouette fill effects](examples/overview-7-effects.png)
+
+*Feature 2 — seven silhouette fill effects*
 
 | Effect | Flag | Description |
 |---|---|---|
