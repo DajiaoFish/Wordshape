@@ -13,6 +13,8 @@ A pure-Python typography tool with two features and 16 effects. No AI image mode
 
 *Feature 1 — nine text transform effects*
 
+> 中文读者：另有一份更口语化的 [使用说明书（中文）](docs/manual.zh-CN.md)。
+
 ---
 
 ## Contents

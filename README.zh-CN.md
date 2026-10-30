@@ -1,14 +1,20 @@
 # WordShape · 文字塑形排印
 
-[English](README.md) | **简体中文**
+|                      |          |
+| -------------------- | -------- |
+| [English](README.md) | **简体中文** |
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+
+
 
 ![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)
 
 **把文字变成图形，再把文字填进图形。**
 
 纯 Python 实现的文字图形工具，两个功能、16 种效果。不调用任何 AI 生图模型 —— 全部本地计算，**无水印、不消耗生图额度、同输入必出同图**。
+
+> 想看更口语化的版本（面向聊天式调用、含对话示例）→ [使用说明书](docs/manual.zh-CN.md)
 
 ---
 
